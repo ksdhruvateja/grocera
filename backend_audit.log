@@ -1,0 +1,13 @@
+# npm audit report
+
+nodemailer  <7.0.7
+Severity: moderate
+Nodemailer: Email to an unintended domain can occur due to Interpretation Conflict - https://github.com/advisories/GHSA-mm7p-fcc7-pg87
+fix available via `npm audit fix --force`
+Will install nodemailer@7.0.10, which is a breaking change
+node_modules/nodemailer
+
+1 moderate severity vulnerability
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
