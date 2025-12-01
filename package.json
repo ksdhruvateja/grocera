@@ -1,7 +1,7 @@
 {
   "name": "rbs-grocery-backend",
   "version": "1.0.0",
-  "description": "Backend for RB's Grocery Shopping App",
+  "description": "Backend for zippyyy Shopping App",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

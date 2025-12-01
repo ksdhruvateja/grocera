@@ -79,7 +79,7 @@ router.post('/submit', [
           <p><em>${subject}</em></p>
           <p>${message.replace(/\n/g, '<br>')}</p>
           <hr>
-          <p>Best regards,<br>RB's Grocery Team</p>
+          <p>Best regards,<br>zippyyy Team</p>
         `
       };
 
@@ -190,7 +190,7 @@ router.post('/:id/respond', adminAuth, [
         to: contact.email,
         subject: `Re: ${contact.subject}`,
         html: `
-          <h2>Response from RB's Grocery</h2>
+          <h2>Response from zippyyy</h2>
           <p>Dear ${contact.name},</p>
           <p>Thank you for reaching out to us. Here's our response to your inquiry:</p>
           <hr>
@@ -201,7 +201,7 @@ router.post('/:id/respond', adminAuth, [
           <p><strong>Our response:</strong></p>
           <p>${response.replace(/\n/g, '<br>')}</p>
           <hr>
-          <p>Best regards,<br>RB's Grocery Team</p>
+          <p>Best regards,<br>zippyyy Team</p>
         `
       };
 
