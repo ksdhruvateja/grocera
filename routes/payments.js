@@ -1,7 +1,7 @@
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Order = require('../models/Order');
-const { authenticate: auth } = require('../middleware/security');
+const { authenticate: auth, authorize } = require('../middleware/security');
 
 const router = express.Router();
 
@@ -419,7 +419,7 @@ router.get('/session/:sessionId', auth, async (req, res) => {
  * POST /api/payments/process-otc
  * Process OTC (Over-the-Counter) card payment
  */
-router.post('/process-otc', async (req, res) => {
+router.post('/process-otc', auth, authorize(['admin']), async (req, res) => {
   try {
     const { orderId, cards, customerInfo, totals } = req.body;
 
@@ -532,7 +532,7 @@ router.post('/process-otc', async (req, res) => {
  * POST /api/payments/process-ebt
  * Process EBT (Electronic Benefit Transfer) card payment
  */
-router.post('/process-ebt', async (req, res) => {
+router.post('/process-ebt', auth, authorize(['admin']), async (req, res) => {
   try {
     const { orderId, cards, customerInfo, totals } = req.body;
 

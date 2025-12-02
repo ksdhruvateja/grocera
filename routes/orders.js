@@ -286,6 +286,23 @@ router.post('/create-direct', async (req, res) => {
 
     await order.save();
     
+    // Emit realtime notification to admin/co-admin dashboards
+    try {
+      const { emitNewOrder } = require('../config/websocket');
+      const orderData = {
+        _id: order._id,
+        orderNumber: order.orderNumber,
+        status: order.status,
+        totalAmount: order.totalAmount,
+        itemCount: order.items.length,
+        createdAt: order.createdAt,
+        customerEmail: customerInfo?.email || shippingAddress.email || ''
+      };
+      emitNewOrder(orderData);
+    } catch (e) {
+      console.log('ℹ️ WebSocket emit skipped for create-direct');
+    }
+
     console.log(`✅ Direct order created: ${order.orderNumber} (ID: ${order._id}) for user: ${userId}`);
     console.log(`📦 Order details:`, {
       orderNumber: order.orderNumber,

@@ -98,14 +98,21 @@ router.post('/login', [
     const { email, password } = req.body;
 
     // Find user by email (case-insensitive) including password for verification
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    let user;
+    try {
+      user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    } catch (findError) {
+      console.error('Login error: Database query failed', findError);
+      return res.status(500).json({ message: 'Database error during login' });
+    }
+    
     if (!user) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
     // Ensure password field was included from the model
     if (!user.password) {
-      console.error('Login error: password field missing from user document');
+      console.error('Login error: Password field missing from user document');
       return res.status(500).json({ message: 'Server error during login' });
     }
 

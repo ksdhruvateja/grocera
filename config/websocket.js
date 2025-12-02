@@ -94,12 +94,14 @@ function emitNewOrder(orderData) {
   if (!io || !wsAvailable) return false;
 
   try {
-    // Emit to admin and co-admin rooms
+    // Emit to admin-only channels
+    io.to('admin-room').emit('orderCreated', orderData);
+    io.to('co-admin-room').emit('orderCreated', orderData);
+    // Backward compatibility with any existing listeners
     io.to('admin-room').emit('new-order', orderData);
     io.to('co-admin-room').emit('new-order', orderData);
-    io.to('orders').emit('new-order', orderData);
-    
-    console.log('📢 New order notification sent via WebSocket');
+
+    console.log('📢 orderCreated notification sent to admin/co-admin');
     return true;
   } catch (error) {
     console.error('WebSocket emit error:', error);

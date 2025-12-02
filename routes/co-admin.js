@@ -3,11 +3,27 @@ const multer = require('multer');
 const path = require('path');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const Message = require('../models/Message');
 const ProductController = require('../controllers/productController');
 const { authenticate: auth, authorize } = require('../middleware/security');
 const coAdminAuth = [auth, authorize(['co-admin', 'admin'])]; // Allow both co-admin and admin
 
 const router = express.Router();
+
+// Optional Socket.IO subscription endpoint for co-admin dashboards
+try {
+  const { getIO } = require('../config/websocket');
+  const io = getIO && getIO();
+  if (io) {
+    io.on('connection', (socket) => {
+      socket.on('subscribe:co-admin', () => {
+        if (socket.userRole === 'co-admin' || socket.userRole === 'admin') {
+          socket.join('co-admin-room');
+        }
+      });
+    });
+  }
+} catch (_) {}
 
 // Multer configuration for file uploads (same as products route)
 const storage = multer.diskStorage({
@@ -194,4 +210,118 @@ router.delete('/products/:id', coAdminAuth, async (req, res) => {
 });
 
 module.exports = router;
+
+// ==============================
+// Messages (mirror admin queries)
+// ==============================
+// List customer messages (Co-Admin/Admin)
+router.get('/messages', coAdminAuth, async (req, res) => {
+  try {
+    const { page = 1, limit = 20, status, priority } = req.query;
+    const query = {};
+
+    if (status && status !== 'all') {
+      query.status = status;
+    }
+
+    if (priority && priority !== 'all') {
+      query.priority = priority;
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const messages = await Message.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Message.countDocuments(query);
+
+    res.json({
+      success: true,
+      messages,
+      totalPages: Math.ceil(total / parseInt(limit)),
+      currentPage: parseInt(page),
+      totalMessages: total
+    });
+  } catch (error) {
+    console.error('Co-admin messages fetch error:', error);
+    res.status(500).json({ success: false, message: 'Server error fetching messages' });
+  }
+});
+
+// Update message status (Co-Admin/Admin)
+router.patch('/messages/:id/status', coAdminAuth, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const validStatuses = ['unread', 'read', 'replied', 'resolved'];
+
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status' });
+    }
+
+    const message = await Message.findById(req.params.id);
+    if (!message) {
+      return res.status(404).json({ success: false, message: 'Message not found' });
+    }
+
+    message.status = status;
+    await message.save();
+
+    res.json({
+      success: true,
+      message: 'Message status updated successfully',
+      data: message
+    });
+  } catch (error) {
+    console.error('Co-admin message status update error:', error);
+    res.status(500).json({ success: false, message: 'Server error updating message status' });
+  }
+});
+
+// Reply to message (Co-Admin/Admin)
+router.post('/messages/:id/reply', coAdminAuth, async (req, res) => {
+  try {
+    const { replyMessage } = req.body;
+
+    if (!replyMessage || replyMessage.trim() === '') {
+      return res.status(400).json({ success: false, message: 'Reply message is required' });
+    }
+
+    const message = await Message.findById(req.params.id);
+    if (!message) {
+      return res.status(404).json({ success: false, message: 'Message not found' });
+    }
+
+    await message.reply(replyMessage, req.user._id);
+
+    res.json({
+      success: true,
+      message: 'Reply sent successfully',
+      data: message
+    });
+  } catch (error) {
+    console.error('Co-admin message reply error:', error);
+    res.status(500).json({ success: false, message: 'Server error sending reply' });
+  }
+});
+
+// Message statistics (Co-Admin/Admin)
+router.get('/messages/stats', coAdminAuth, async (req, res) => {
+  try {
+    const stats = await Message.getMessageStats();
+    const totalMessages = await Message.countDocuments();
+
+    const statusCounts = { unread: 0, read: 0, replied: 0, resolved: 0 };
+    stats.forEach(stat => { statusCounts[stat._id] = stat.count; });
+
+    res.json({
+      success: true,
+      stats: { total: totalMessages, ...statusCounts }
+    });
+  } catch (error) {
+    console.error('Co-admin message stats error:', error);
+    res.status(500).json({ success: false, message: 'Server error fetching message statistics' });
+  }
+});
 

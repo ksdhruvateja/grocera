@@ -9,6 +9,19 @@ const adminAuth = [auth, authorize(['admin'])];
 
 const router = express.Router();
 
+// Optional Socket.IO subscription endpoint for admin dashboards
+try {
+  const { getIO } = require('../config/websocket');
+  const io = getIO && getIO();
+  if (io) {
+    io.on('connection', (socket) => {
+      socket.on('subscribe:admin', () => {
+        if (socket.userRole === 'admin') socket.join('admin-room');
+      });
+    });
+  }
+} catch (_) {}
+
 // Dashboard statistics
 router.get('/dashboard', adminAuth, async (req, res) => {
   try {
