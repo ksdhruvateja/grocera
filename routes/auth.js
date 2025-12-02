@@ -15,7 +15,7 @@ router.post('/register', [
   body('firstName').trim().isLength({ min: 2 }).withMessage('First name must be at least 2 characters'),
   body('lastName').trim().isLength({ min: 2 }).withMessage('Last name must be at least 2 characters'),
   body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+  body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -41,29 +41,32 @@ router.post('/register', [
       });
     }
 
-    // Hash password securely
-    const salt = await bcrypt.genSalt(12);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
     // Create new customer user (all registrations are customers by default)
     const user = new User({
       firstName,
       lastName,
       name: `${firstName} ${lastName}`,
       email: email.toLowerCase(),
-      password: hashedPassword,
+      // Let the model pre-save hook hash this once
+      password: password,
       role: 'customer', // ALWAYS customer for registrations
       isActive: true
     });
 
     await user.save();
 
-    // Generate JWT
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET || 'fallback_secret_key',
-      { expiresIn: '30d' }
-    );
+    // Generate JWT (align with verification: issuer/audience, string id)
+    let token;
+    try {
+      token = jwt.sign(
+        { id: String(user._id), role: user.role },
+        process.env.JWT_SECRET || 'fallback-secret-key',
+        { expiresIn: '30d', issuer: 'rbs-grocery-app', audience: 'rbs-grocery-users' }
+      );
+    } catch (e) {
+      console.error('Registration error: JWT generation failed', e.message);
+      return res.status(500).json({ message: 'Server error during registration' });
+    }
 
     res.status(201).json({
       message: 'User registered successfully',
@@ -94,19 +97,31 @@ router.post('/login', [
 
     const { email, password } = req.body;
 
-    // Find user by email (case-insensitive)
-    const user = await User.findOne({ email: email.toLowerCase() });
+    // Find user by email (case-insensitive) including password for verification
+    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
     if (!user) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Check if account is active
-    if (!user.isActive) {
+    // Ensure password field was included from the model
+    if (!user.password) {
+      console.error('Login error: password field missing from user document');
+      return res.status(500).json({ message: 'Server error during login' });
+    }
+
+    // Check if account is active (treat undefined as active)
+    if (user.isActive === false) {
       return res.status(403).json({ message: 'Account has been deactivated. Please contact support.' });
     }
 
     // Verify password
-    const isMatch = await bcrypt.compare(password, user.password);
+    let isMatch = false;
+    try {
+      isMatch = await bcrypt.compare(password, user.password);
+    } catch (e) {
+      console.error('Login error: bcrypt comparison failed', e.message);
+      return res.status(500).json({ message: 'Server error during login' });
+    }
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
@@ -118,15 +133,25 @@ router.post('/login', [
     }
 
     // Generate JWT token with user identity
-    const token = jwt.sign(
-      {
-        id: user._id,
-        email: user.email,
-        role: user.role
-      },
-      process.env.JWT_SECRET || 'fallback_secret_key',
-      { expiresIn: '30d' }
-    );
+    let token;
+    try {
+      token = jwt.sign(
+        {
+          id: String(user._id),
+          email: user.email,
+          role: user.role
+        },
+        process.env.JWT_SECRET || 'fallback-secret-key',
+        {
+          expiresIn: '30d',
+          issuer: 'rbs-grocery-app',
+          audience: 'rbs-grocery-users'
+        }
+      );
+    } catch (e) {
+      console.error('Login error: JWT generation failed', e.message);
+      return res.status(500).json({ message: 'Server error during login' });
+    }
 
     // Log successful login
     console.log(`✅ User logged in: ${user.email} (${user.role})`);

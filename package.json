@@ -7,7 +7,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "setup": "node setup-database.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:permissions": "node test-permissions.js"
   },
   "keywords": [
     "grocery",
@@ -34,6 +35,8 @@
     "mongoose": "^7.5.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^7.0.10",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "stripe": "^13.5.0",
     "winston": "^3.18.3",
     "xss-clean": "^0.1.4"

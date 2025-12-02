@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const User = require('./models/User');
@@ -23,18 +22,14 @@ async function createCoAdminUser() {
     if (existingUser) {
       // Update existing user to co-admin
       existingUser.role = 'co-admin';
-      if (password !== 'coadmin123' || process.argv[3]) {
-        const hashedPassword = await bcrypt.hash(password, 12);
-        existingUser.password = hashedPassword;
-      }
+      // Set plaintext password; model will hash once in pre-save
+      if (password) existingUser.password = password;
       await existingUser.save();
       console.log('✅ Existing user updated to co-admin role!');
       console.log(`Email: ${email}`);
       console.log(`Password: ${password || '(unchanged)'}`);
     } else {
       // Create new co-admin user
-      const hashedPassword = await bcrypt.hash(password, 12);
-      
       // Split name properly for firstName/lastName validation
       const nameParts = name.split(' ');
       const firstName = nameParts[0] || 'CoAdmin';
@@ -43,7 +38,7 @@ async function createCoAdminUser() {
       const coAdminUser = new User({
         name: name,
         email: email.toLowerCase(),
-        password: hashedPassword,
+        password: password, // plaintext; model pre-save will hash once
         role: 'co-admin',
         firstName: firstName.replace(/[^a-zA-Z\s]/g, ''), // Remove special chars for validation
         lastName: lastName.replace(/[^a-zA-Z\s]/g, '') || 'User'

@@ -1,39 +1,43 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
-// User model
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  role: { type: String, enum: ['customer', 'admin'], default: 'customer' }
-}, { timestamps: true });
-
-const User = mongoose.model('User', userSchema);
+const User = require('./models/User');
 
 async function createAdminUser() {
   try {
     // Connect to MongoDB
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/rbs-grocery');
-    console.log('Connected to MongoDB');
+    console.log('✅ Connected to MongoDB');
 
     // Check if admin exists
-    const existingAdmin = await User.findOne({ role: 'admin' });
+    const existingAdmin = await User.findOne({ email: 'admin@rbsgrocery.com' });
     
     if (existingAdmin) {
-      console.log('Admin user already exists:', existingAdmin.email);
+      // Ensure fields and password are correct
+      existingAdmin.role = 'admin';
+      existingAdmin.firstName = existingAdmin.firstName || 'Admin';
+      existingAdmin.lastName = existingAdmin.lastName || 'User';
+      existingAdmin.name = existingAdmin.name || 'Admin User';
+      existingAdmin.isActive = true;
+      // Set plaintext to trigger pre-save hash once
+      existingAdmin.password = 'admin123';
+      await existingAdmin.save();
+      console.log('✅ Admin user updated!');
+      console.log('Email: admin@rbsgrocery.com');
+      console.log('Password: admin123');
+      await mongoose.disconnect();
       process.exit(0);
     }
 
     // Create admin user
-    const hashedPassword = await bcrypt.hash('admin123', 12);
-    
     const adminUser = new User({
+      firstName: 'Admin',
+      lastName: 'User',
       name: 'Admin User',
       email: 'admin@rbsgrocery.com',
-      password: hashedPassword,
-      role: 'admin'
+      password: 'admin123',
+      role: 'admin',
+      isActive: true
     });
 
     await adminUser.save();
