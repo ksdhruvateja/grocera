@@ -1,0 +1,19 @@
+[build]
+  # Build command
+  command = "npm run build"
+  # Directory to publish (the build output)
+  publish = "build"
+
+[[redirects]]
+  # Handle client-side routing for React SPA
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  # Node.js version for build
+  NODE_VERSION = "18"
+
+# Optional: Function timeout if using Netlify Functions
+[functions]
+  node_bundler = "esbuild"

@@ -1,0 +1,85 @@
+# Test run @ 2025-12-02T19:40:56.349Z
+
+== Health ==
+OK: Health endpoint responded
+
+== Login ==
+OK: Admin login success
+OK: Co-Admin login success
+
+== Customer Registration ==
+OK: Customer registration success
+
+== Product Ensure ==
+OK: Found product 692df08f643e9b2c51eae96e
+
+== Create Order ==
+OK: Order created 692f40ccfc319a69c6177bab
+
+== Payments Authorization ==
+OK: Co-Admin denied OTC as expected
+OK: Co-Admin denied EBT as expected
+OK: Admin OTC processed
+OK: Admin EBT processed
+
+== Messages Visibility ==
+OK: Public message created 692f40ccfc319a69c6177bc6
+OK: Co-Admin can list messages
+OK: Admin can list messages
+OK: Co-Admin updated message status
+
+== WebSocket (optional) ==
+OK: Admin received orderCreated
+OK: Co-Admin received orderCreated
+
+All checks completed.
+
+--- Captured Server Logs (tail) ---
+🔄 Attempting to connect to MongoDB...
+📍 MongoDB URI: Set
+✅ WebSocket support enabled
+✅ WebSocket server initialized
+ℹ️ Redis not configured (REDIS_URL or REDIS_HOST not set)
+💡 To enable Redis caching, set REDIS_URL or REDIS_HOST in .env
+🚀 Server is running on port 5015
+🌍 Environment: development
+📖 API Documentation: http://localhost:5015/api/docs
+🏥 Health Check: http://localhost:5015/api/health
+🏥 Health check requested
+🏥 Health check requested
+✅ MongoDB connected successfully
+📦 Database: rbs-grocery
+🌐 Host: ac-enqz1te-shard-00-01.y5gz9fh.mongodb.net:27017
+✅ User logged in: admin@rbsgrocery.com (admin)
+✅ User logged in: coadmin@rbsgrocery.com (co-admin)
+🔍 Product query filter: {}
+📊 Sort: name asc
+📄 Pagination: { page: 1, limit: 20 }
+✅ Found 1 products out of 1 total
+📢 orderCreated notification sent to admin/co-admin
+✅ Direct order created: ORD-1764704460056-A001JHTA8 (ID: 692f40ccfc319a69c6177bab) for user: 692f40cbfc319a69c6177b9a
+📦 Order details: {
+  orderNumber: 'ORD-1764704460056-A001JHTA8',
+  status: 'pending',
+  paymentMethod: 'stripe',
+  totalAmount: 12.1666125,
+  itemsCount: 1,
+  createdAt: 2025-12-02T19:41:00.061Z
+}
+✅ Direct order created: ORD-1764704460056-A001JHTA8 for user: 692f40cbfc319a69c6177b9a
+✅ OTC Payment processed for order ORD-1764704460056-A001JHTA8
+✅ EBT Payment processed for order ORD-1764704460056-A001JHTA8
+✅ WebSocket client connected: 692de22da7181a664e4cabf7 (admin)
+✅ WebSocket client connected: 692de22e4ad0ccfbf52404d8 (co-admin)
+📢 orderCreated notification sent to admin/co-admin
+✅ Direct order created: ORD-1764704461416-0CYW0SPF1 (ID: 692f40cdfc319a69c6177bd7) for user: 692f40cbfc319a69c6177b9a
+📦 Order details: {
+  orderNumber: 'ORD-1764704461416-0CYW0SPF1',
+  status: 'pending',
+  paymentMethod: 'stripe',
+  totalAmount: 12.1666125,
+  itemsCount: 1,
+  createdAt: 2025-12-02T19:41:01.418Z
+}
+✅ Direct order created: ORD-1764704461416-0CYW0SPF1 for user: 692f40cbfc319a69c6177b9a
+

@@ -1,0 +1,42 @@
+.about-page-container {
+  background: linear-gradient(135deg, rgba(253, 253, 248, 0.95) 0%, rgba(240, 244, 232, 0.95) 100%);
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(106, 153, 78, 0.12);
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  border: 1px solid rgba(106, 153, 78, 0.2);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.about-title {
+  font-size: 2.2rem;
+  color: #1e90ff;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.about-page-container ul {
+  margin: 1.5rem 0 1.5rem 1.5rem;
+  color: #1e90ff;
+  font-size: 1.08rem;
+}
+
+.about-page-container li {
+  margin-bottom: 0.7rem;
+  font-weight: 500;
+}
+
+.about-page-container p {
+  margin-bottom: 1.2rem;
+}

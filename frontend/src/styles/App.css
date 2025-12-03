@@ -1,0 +1,196 @@
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+  background: transparent;
+}
+
+.main-content {
+  flex: 1;
+  width: 100%;
+  padding: 0;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: transparent;
+}
+
+.not-found {
+  text-align: center;
+  padding: 4rem 0;
+  font-size: 1.2rem;
+  color: var(--text-medium);
+}
+
+/* Loading Spinner for Lazy Loading */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 40px;
+  color: #666;
+}
+
+.loading-spinner {
+  margin-bottom: 20px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f0f0f0;
+  border-top: 4px solid #ff6b00;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+/* Modern Responsive Design - Full Screen Adaptive */
+
+/* Mobile phones (up to 480px) */
+@media (max-width: 480px) {
+  .main-content {
+    padding: 0;
+    min-height: calc(100vh - 60px);
+  }
+
+  .container {
+    padding: 0 clamp(0.75rem, 3vw, 1rem);
+    width: 100%;
+  }
+
+  .loading-container {
+    padding: 20px;
+    min-height: 150px;
+  }
+
+  .spinner {
+    width: 30px;
+    height: 30px;
+  }
+
+  .not-found {
+    padding: 2rem 1rem;
+    font-size: 1rem;
+  }
+}
+
+/* Small tablets and large phones (481px to 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .main-content {
+    padding: 0;
+    min-height: calc(100vh - 70px);
+  }
+
+  .container {
+    padding: 0 clamp(1rem, 4vw, 1.5rem);
+    width: 100%;
+  }
+
+  .loading-container {
+    padding: 30px;
+    min-height: 180px;
+  }
+
+  .not-found {
+    padding: 3rem 1.5rem;
+    font-size: 1.1rem;
+  }
+}
+
+/* Tablets (769px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .main-content {
+    padding: 0;
+    min-height: calc(100vh - 75px);
+  }
+
+  .container {
+    padding: 0 clamp(1.5rem, 5vw, 2rem);
+    width: 100%;
+  }
+}
+
+/* Desktop and laptops (1025px to 1440px) */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .main-content {
+    padding: 0;
+    min-height: calc(100vh - 80px);
+  }
+
+  .container {
+    padding: 0 clamp(2rem, 6vw, 3rem);
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Large screens (1441px to 1920px) */
+@media (min-width: 1441px) and (max-width: 1920px) {
+  .container {
+    padding: 0 clamp(3rem, 8vw, 4rem);
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .main-content {
+    padding: 0;
+    min-height: calc(100vh - 80px);
+  }
+}
+
+/* Ultra-wide screens (1921px and up) */
+@media (min-width: 1921px) {
+  .container {
+    padding: 0 clamp(4rem, 10vw, 6rem);
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .main-content {
+    padding: 0;
+    min-height: calc(100vh - 80px);
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .spinner {
+    border-width: 3px;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  .main-content {
+    padding: 1rem 0;
+    min-height: calc(100vh - 120px);
+  }
+}
+
+/* Print styles */
+@media print {
+  .main-content {
+    padding: 1rem;
+  }
+  
+  .loading-spinner {
+    display: none;
+  }
+}

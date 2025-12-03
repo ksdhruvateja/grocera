@@ -1,0 +1,47 @@
+{
+  "name": "rbs-grocery-backend",
+  "version": "1.0.0",
+  "description": "Backend for zippyyy Shopping App",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "setup": "node setup-database.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:permissions": "node test-permissions.js"
+  },
+  "keywords": [
+    "grocery",
+    "shopping",
+    "express",
+    "mongodb"
+  ],
+  "author": "RB's Team",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.5.1",
+    "express-validator": "^7.0.1",
+    "express-winston": "^4.2.0",
+    "helmet": "^7.2.0",
+    "hpp": "^0.2.3",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.5.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^7.0.10",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "stripe": "^13.5.0",
+    "winston": "^3.18.3",
+    "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
