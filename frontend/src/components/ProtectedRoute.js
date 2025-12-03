@@ -2,8 +2,8 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-function ProtectedRoute({ children, adminOnly = false }) {
-  const { isAuthenticated, isLoading, isAdmin } = useAuth();
+function ProtectedRoute({ children, adminOnly = false, coAdminOnly = false }) {
+  const { isAuthenticated, isLoading, isAdmin, user } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -19,6 +19,10 @@ function ProtectedRoute({ children, adminOnly = false }) {
   }
 
   if (adminOnly && !isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (coAdminOnly && user?.role !== 'co-admin') {
     return <Navigate to="/" replace />;
   }
 

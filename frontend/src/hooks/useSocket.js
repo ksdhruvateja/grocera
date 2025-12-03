@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 
 const SOCKET_URL = process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000';
 
-export const useSocket = (token, role) => {
+export const useSocket = (providedToken, providedRole) => {
   const [socket, setSocket] = useState(null);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState(null);
@@ -11,6 +11,20 @@ export const useSocket = (token, role) => {
   const maxReconnectAttempts = 5;
 
   useEffect(() => {
+    // Get token and role from params or localStorage
+    const token = providedToken || localStorage.getItem('token');
+    const userStr = localStorage.getItem('user');
+    let role = providedRole;
+    
+    if (!role && userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        role = user.role;
+      } catch (e) {
+        console.error('Failed to parse user:', e);
+      }
+    }
+
     if (!token || !role) {
       console.warn('Socket connection requires token and role');
       return;
@@ -82,7 +96,7 @@ export const useSocket = (token, role) => {
         socketInstance.close();
       }
     };
-  }, [token, role]);
+  }, [providedToken, providedRole]);
 
   return { socket, connected, error };
 };
