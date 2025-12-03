@@ -1,0 +1,30 @@
+LOGIN_ERROR 2025-12-01T19:33:45.950Z {"email":"admin@rbsgrocery.com","password":"admin123"}
+FOUND_USER 2025-12-01T19:33:46.136Z admin@rbsgrocery.com hasPassword=true
+BEFORE_ACTIVE 2025-12-01T19:33:46.137Z isActive=true
+BEFORE_COMPARE 2025-12-01T19:33:46.137Z admin@rbsgrocery.com
+COMPARE_RESULT 2025-12-01T19:33:46.342Z isMatch=true
+LOGIN_ERROR 2025-12-01T19:33:46.346Z {"email":"coadmin@rbsgrocery.com","password":"coadmin2024"}
+FOUND_USER 2025-12-01T19:33:46.413Z coadmin@rbsgrocery.com hasPassword=true
+BEFORE_ACTIVE 2025-12-01T19:33:46.413Z isActive=true
+BEFORE_COMPARE 2025-12-01T19:33:46.413Z coadmin@rbsgrocery.com
+COMPARE_RESULT 2025-12-01T19:33:46.619Z isMatch=true
+LOGIN_ERROR 2025-12-01T19:46:21.785Z {"email":"admin@rbsgrocery.com","password":"admin123"}
+FOUND_USER 2025-12-01T19:46:22.490Z admin@rbsgrocery.com hasPassword=true
+BEFORE_ACTIVE 2025-12-01T19:46:22.490Z isActive=true
+BEFORE_COMPARE 2025-12-01T19:46:22.491Z admin@rbsgrocery.com
+COMPARE_RESULT 2025-12-01T19:46:22.829Z isMatch=true
+LOGIN_ERROR 2025-12-01T19:46:22.836Z {"email":"coadmin@rbsgrocery.com","password":"coadmin2024"}
+FOUND_USER 2025-12-01T19:46:22.858Z coadmin@rbsgrocery.com hasPassword=true
+BEFORE_ACTIVE 2025-12-01T19:46:22.858Z isActive=true
+BEFORE_COMPARE 2025-12-01T19:46:22.858Z coadmin@rbsgrocery.com
+COMPARE_RESULT 2025-12-01T19:46:23.186Z isMatch=true
+LOGIN_ERROR 2025-12-01T19:48:48.253Z {"email":"admin@rbsgrocery.com","password":"admin123"}
+FOUND_USER 2025-12-01T19:48:48.630Z admin@rbsgrocery.com hasPassword=true
+BEFORE_ACTIVE 2025-12-01T19:48:48.631Z isActive=true
+BEFORE_COMPARE 2025-12-01T19:48:48.631Z admin@rbsgrocery.com
+COMPARE_RESULT 2025-12-01T19:48:48.965Z isMatch=true
+LOGIN_ERROR 2025-12-01T19:48:48.972Z {"email":"coadmin@rbsgrocery.com","password":"coadmin2024"}
+FOUND_USER 2025-12-01T19:48:48.994Z coadmin@rbsgrocery.com hasPassword=true
+BEFORE_ACTIVE 2025-12-01T19:48:48.994Z isActive=true
+BEFORE_COMPARE 2025-12-01T19:48:48.995Z coadmin@rbsgrocery.com
+COMPARE_RESULT 2025-12-01T19:48:49.324Z isMatch=true
