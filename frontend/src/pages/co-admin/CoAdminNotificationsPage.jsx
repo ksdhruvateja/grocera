@@ -4,7 +4,7 @@ import { useSocket } from '../../hooks/useSocket';
 import toast from 'react-hot-toast';
 
 const CoAdminNotificationsPage = () => {
-  const socket = useSocket();
+  const { socket, connected, error } = useSocket();
   const [notifications, setNotifications] = useState([]);
   const [filter, setFilter] = useState('all');
 
@@ -27,7 +27,7 @@ const CoAdminNotificationsPage = () => {
 
   // Real-time Socket.IO listeners
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || typeof socket.on !== 'function') return;
 
     // Price approval updates
     socket.on('priceApprovalUpdate', (data) => {
@@ -72,9 +72,11 @@ const CoAdminNotificationsPage = () => {
     });
 
     return () => {
-      socket.off('priceApprovalUpdate');
-      socket.off('orderCreated');
-      socket.off('orderUpdated');
+      if (socket && typeof socket.off === 'function') {
+        socket.off('priceApprovalUpdate');
+        socket.off('orderCreated');
+        socket.off('orderUpdated');
+      }
     };
   }, [socket]);
 

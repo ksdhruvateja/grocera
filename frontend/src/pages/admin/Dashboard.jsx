@@ -5,7 +5,7 @@ import OrdersTable from '../../components/admin/OrdersTable';
 import { Activity, TrendingUp } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const socket = useSocket();
+  const { socket, connected, error } = useSocket();
   const [recentActivity, setRecentActivity] = useState([]);
 
   useEffect(() => {

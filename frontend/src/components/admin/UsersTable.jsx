@@ -19,6 +19,12 @@ const UsersTable = () => {
   }, []);
 
   useEffect(() => {
+    // Ensure users is an array
+    if (!Array.isArray(users)) {
+      setFilteredUsers([]);
+      return;
+    }
+
     let result = users;
 
     if (roleFilter !== 'all') {
@@ -43,10 +49,18 @@ const UsersTable = () => {
       const { data } = await axios.get('/api/admin/users', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUsers(data);
+      // Ensure data is an array
+      if (Array.isArray(data)) {
+        setUsers(data);
+      } else if (data && Array.isArray(data.users)) {
+        setUsers(data.users);
+      } else {
+        setUsers([]);
+      }
     } catch (error) {
       console.error('Failed to fetch users:', error);
       toast.error('Failed to load users');
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -77,8 +91,8 @@ const UsersTable = () => {
   // Pagination
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+  const currentUsers = Array.isArray(filteredUsers) ? filteredUsers.slice(indexOfFirstUser, indexOfLastUser) : [];
+  const totalPages = Array.isArray(filteredUsers) ? Math.ceil(filteredUsers.length / usersPerPage) : 0;
 
   if (loading) {
     return (

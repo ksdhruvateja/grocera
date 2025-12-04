@@ -15,6 +15,7 @@ import ProtectedRoute from './ProtectedRoute';
 // Components (always loaded)
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
+import ChatWidget from '../components/layout/ChatWidget';
 import ErrorBoundary from '../components/common/ErrorBoundary';
 
 // Critical pages (loaded immediately)
@@ -114,6 +115,7 @@ function AppRouter() {
       <QueryClientProvider client={queryClient}>
       <div className="App min-h-screen bg-gradient-to-br from-dark-900 to-dark-800 font-sans">
         <Header />
+        <ChatWidget />
         <main className="main-content min-h-screen py-8">
           <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>

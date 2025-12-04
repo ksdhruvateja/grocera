@@ -3,7 +3,7 @@ import PriceRequests from '../../components/co-admin/PriceRequests';
 import { useSocket } from '../../hooks/useSocket';
 
 const CoAdminPriceRequestsPage = () => {
-  const socket = useSocket();
+  const { socket, connected, error } = useSocket();
 
   return (
     <div>

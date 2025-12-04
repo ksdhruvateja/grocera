@@ -23,7 +23,7 @@ const CoAdminDashboard = ({ socket }) => {
 
   // Real-time updates via Socket.IO
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || typeof socket.on !== 'function') return;
 
     // Listen for price approval/rejection from admin
     socket.on('priceApprovalUpdate', (data) => {
@@ -45,8 +45,10 @@ const CoAdminDashboard = ({ socket }) => {
     });
 
     return () => {
-      socket.off('priceApprovalUpdate');
-      socket.off('orderCreated');
+      if (socket && typeof socket.off === 'function') {
+        socket.off('priceApprovalUpdate');
+        socket.off('orderCreated');
+      }
     };
   }, [socket]);
 

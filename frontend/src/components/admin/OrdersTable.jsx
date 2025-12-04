@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 const OrdersTable = ({ socket }) => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
-  const [loadingLocal, setLoadingLocal] = useState(true);
+  const [loadingLocal, setLoadingLocal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,16 +25,22 @@ const OrdersTable = ({ socket }) => {
 
   const { ordersQuery, updateStatus, assignAgent } = useOrders();
   const { data: ordersData, isLoading } = ordersQuery;
+  
   useEffect(() => {
-    if (ordersData) setOrders(ordersData);
+    if (ordersData && Array.isArray(ordersData)) {
+      setOrders(ordersData);
+    } else if (ordersData) {
+      // Handle case where data might be an object with orders property
+      setOrders(Array.isArray(ordersData.orders) ? ordersData.orders : []);
+    }
   }, [ordersData]);
 
   // Real-time order updates
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || typeof socket.on !== 'function') return;
 
     socket.on('orderCreated', (order) => {
-      setOrders(prev => [order, ...prev]);
+      setOrders(prev => Array.isArray(prev) ? [order, ...prev] : [order]);
       toast.success(`New order #${order.orderId} received!`, {
         icon: '🛒',
         duration: 4000,
@@ -42,19 +48,29 @@ const OrdersTable = ({ socket }) => {
     });
 
     socket.on('orderUpdated', (updatedOrder) => {
-      setOrders(prev =>
-        prev.map(order => order._id === updatedOrder._id ? updatedOrder : order)
+      setOrders(prev => 
+        Array.isArray(prev) 
+          ? prev.map(order => order._id === updatedOrder._id ? updatedOrder : order)
+          : [updatedOrder]
       );
     });
 
     return () => {
-      socket.off('orderCreated');
-      socket.off('orderUpdated');
+      if (socket && typeof socket.off === 'function') {
+        socket.off('orderCreated');
+        socket.off('orderUpdated');
+      }
     };
   }, [socket]);
 
   // Filter and search
   useEffect(() => {
+    // Ensure orders is an array before filtering
+    if (!Array.isArray(orders)) {
+      setFilteredOrders([]);
+      return;
+    }
+
     let result = orders;
 
     if (statusFilter !== 'all') {
@@ -98,8 +114,8 @@ const OrdersTable = ({ socket }) => {
   // Pagination
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
-  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+  const currentOrders = Array.isArray(filteredOrders) ? filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder) : [];
+  const totalPages = Array.isArray(filteredOrders) ? Math.ceil(filteredOrders.length / ordersPerPage) : 0;
 
   const loading = isLoading || loadingLocal; // maintain previous skeleton state if needed
   if (loading) {

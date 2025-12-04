@@ -9,7 +9,7 @@ const DashboardCards = ({ socket }) => {
 
   // Real-time updates via Socket.IO
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || typeof socket.on !== 'function') return;
 
     socket.on('orderCreated', (order) => {
       toast.success(`New order #${order.orderId} received!`);
@@ -21,17 +21,27 @@ const DashboardCards = ({ socket }) => {
     });
 
     return () => {
-      socket.off('orderCreated');
-      socket.off('newMessage');
+      if (socket && typeof socket.off === 'function') {
+        socket.off('orderCreated');
+        socket.off('newMessage');
+      }
     };
   }, [socket, refetch]);
 
-  
+  // Default values if stats is undefined
+  const statsData = stats || {
+    totalSales: 0,
+    totalOrders: 0,
+    totalRevenue: 0,
+    totalUsers: 0,
+    totalProducts: 0,
+    unreadMessages: 0,
+  };
 
   const cards = [
     {
       title: 'Total Sales',
-      value: formatCurrency(stats.totalSales),
+      value: formatCurrency(statsData.totalSales),
       icon: DollarSign,
       color: 'from-green-500 to-emerald-600',
       textColor: 'text-green-400',
@@ -39,7 +49,7 @@ const DashboardCards = ({ socket }) => {
     },
     {
       title: 'Total Orders',
-      value: stats.totalOrders.toLocaleString(),
+      value: statsData.totalOrders.toLocaleString(),
       icon: ShoppingCart,
       color: 'from-blue-500 to-blue-600',
       textColor: 'text-blue-400',
@@ -47,7 +57,7 @@ const DashboardCards = ({ socket }) => {
     },
     {
       title: 'Revenue',
-      value: formatCurrency(stats.totalRevenue),
+      value: formatCurrency(statsData.totalRevenue),
       icon: TrendingUp,
       color: 'from-purple-500 to-purple-600',
       textColor: 'text-purple-400',
@@ -55,7 +65,7 @@ const DashboardCards = ({ socket }) => {
     },
     {
       title: 'Total Users',
-      value: stats.totalUsers.toLocaleString(),
+      value: statsData.totalUsers.toLocaleString(),
       icon: Users,
       color: 'from-orange-500 to-orange-600',
       textColor: 'text-orange-400',
@@ -63,7 +73,7 @@ const DashboardCards = ({ socket }) => {
     },
     {
       title: 'Products',
-      value: stats.totalProducts.toLocaleString(),
+      value: statsData.totalProducts.toLocaleString(),
       icon: Package,
       color: 'from-cyan-500 to-cyan-600',
       textColor: 'text-cyan-400',
@@ -71,11 +81,11 @@ const DashboardCards = ({ socket }) => {
     },
     {
       title: 'Messages',
-      value: stats.unreadMessages.toLocaleString(),
+      value: statsData.unreadMessages.toLocaleString(),
       icon: MessageSquare,
       color: 'from-pink-500 to-pink-600',
       textColor: 'text-pink-400',
-      change: stats.unreadMessages > 0 ? 'New' : '',
+      change: statsData.unreadMessages > 0 ? 'New' : '',
     },
   ];
 

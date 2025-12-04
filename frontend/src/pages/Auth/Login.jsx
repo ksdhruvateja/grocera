@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { ZIPPYYY_LOGO } from '../../assets';
 import Button from '../../components/common/Button';
 import axios from 'axios';
@@ -11,21 +11,31 @@ const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState('customer');
+  const [loginError, setLoginError] = useState('');
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm();
+
+  const email = watch('email');
+  const password = watch('password');
 
   const onSubmit = async (data) => {
     setLoading(true);
+    setLoginError('');
+    
     try {
+      console.log('🔐 Attempting login with:', { email: data.email });
+      
       const response = await axios.post('http://localhost:5000/api/auth/login', {
         email: data.email,
         password: data.password,
       });
+
+      console.log('✅ Login response:', response.data);
 
       const { token, user } = response.data;
 
@@ -33,7 +43,7 @@ const Login = () => {
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
 
-      toast.success(`Welcome back, ${user.name}!`);
+      toast.success(`Welcome back, ${user.name || user.email}!`);
 
       // Role-based redirect
       switch (user.role) {
@@ -49,7 +59,9 @@ const Login = () => {
           break;
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Login failed. Please try again.';
+      console.error('❌ Login error:', error.response?.data || error.message);
+      const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials.';
+      setLoginError(errorMessage);
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -76,43 +88,6 @@ const Login = () => {
 
         {/* Login Card */}
         <div className="bg-gray-800/50 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-gray-700 animate-slideInDown">
-          {/* Role Selector */}
-          <div className="flex gap-2 mb-6">
-            <button
-              type="button"
-              onClick={() => setSelectedRole('customer')}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
-                selectedRole === 'customer'
-                  ? 'bg-primary-600 text-white shadow-lg'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-            >
-              Customer
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedRole('admin')}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
-                selectedRole === 'admin'
-                  ? 'bg-primary-600 text-white shadow-lg'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-            >
-              Admin
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedRole('co-admin')}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
-                selectedRole === 'co-admin'
-                  ? 'bg-primary-600 text-white shadow-lg'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
-            >
-              Co-Admin
-            </button>
-          </div>
-
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Email Field */}
             <div>
@@ -169,6 +144,12 @@ const Login = () => {
               {errors.password && (
                 <p className="mt-1 text-sm text-red-400">{errors.password.message}</p>
               )}
+              {loginError && (
+                <div className="mt-2 flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/50 rounded-lg">
+                  <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                  <p className="text-sm text-red-400">{loginError}</p>
+                </div>
+              )}
             </div>
 
             {/* Remember Me & Forgot Password */}
@@ -194,7 +175,7 @@ const Login = () => {
               variant="primary"
               size="lg"
               className="w-full"
-              disabled={loading}
+              disabled={loading || !email || !password}
             >
               {loading ? (
                 <span className="flex items-center justify-center">

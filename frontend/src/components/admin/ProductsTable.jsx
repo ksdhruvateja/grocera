@@ -31,6 +31,12 @@ const ProductsTable = () => {
   }, []);
 
   useEffect(() => {
+    // Ensure products is an array
+    if (!Array.isArray(products)) {
+      setFilteredProducts([]);
+      return;
+    }
+
     let result = products;
 
     if (categoryFilter !== 'all') {
@@ -50,10 +56,18 @@ const ProductsTable = () => {
   const fetchProducts = async () => {
     try {
       const { data } = await axios.get('/api/products');
-      setProducts(data);
+      // Ensure data is an array
+      if (Array.isArray(data)) {
+        setProducts(data);
+      } else if (data && Array.isArray(data.products)) {
+        setProducts(data.products);
+      } else {
+        setProducts([]);
+      }
     } catch (error) {
       console.error('Failed to fetch products:', error);
       toast.error('Failed to load products');
+      setProducts([]);
     } finally {
       setLoading(false);
     }
@@ -149,10 +163,10 @@ const ProductsTable = () => {
   // Pagination
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const currentProducts = Array.isArray(filteredProducts) ? filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct) : [];
+  const totalPages = Array.isArray(filteredProducts) ? Math.ceil(filteredProducts.length / productsPerPage) : 0;
 
-  const categories = [...new Set(products.map(p => p.category))];
+  const categories = Array.isArray(products) ? [...new Set(products.map(p => p.category))] : [];
 
   if (loading) {
     return (

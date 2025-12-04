@@ -3,7 +3,7 @@ import OrdersTable from '../../components/admin/OrdersTable';
 import { useSocket } from '../../hooks/useSocket';
 
 const AdminOrders = () => {
-  const socket = useSocket();
+  const { socket, connected, error } = useSocket();
 
   return (
     <div className="space-y-6">

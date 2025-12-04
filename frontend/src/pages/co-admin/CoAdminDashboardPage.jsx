@@ -3,7 +3,7 @@ import CoAdminDashboard from '../../components/co-admin/CoAdminDashboard';
 import { useSocket } from '../../hooks/useSocket';
 
 const CoAdminDashboardPage = () => {
-  const socket = useSocket();
+  const { socket, connected, error } = useSocket();
 
   return <CoAdminDashboard socket={socket} />;
 };

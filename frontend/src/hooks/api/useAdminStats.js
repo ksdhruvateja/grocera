@@ -8,14 +8,16 @@ export const useAdminStats = () => {
       const { data } = await api.get('/admin/dashboard/stats');
       return data;
     },
-    placeholderData: {
+    initialData: {
       totalSales: 0,
       totalOrders: 0,
       totalRevenue: 0,
       totalUsers: 0,
       totalProducts: 0,
       unreadMessages: 0
-    }
+    },
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 };
 

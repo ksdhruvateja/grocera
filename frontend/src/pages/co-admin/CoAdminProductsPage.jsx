@@ -3,7 +3,7 @@ import ProductsTable from '../../components/co-admin/ProductsTable';
 import { useSocket } from '../../hooks/useSocket';
 
 const CoAdminProductsPage = () => {
-  const socket = useSocket();
+  const { socket, connected, error } = useSocket();
 
   return (
     <div>

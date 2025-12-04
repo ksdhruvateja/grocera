@@ -37,7 +37,7 @@ const PriceRequests = ({ socket }) => {
 
   // Real-time updates via Socket.IO
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || typeof socket.on !== 'function') return;
 
     socket.on('priceApprovalUpdate', (data) => {
       // Update the request in the list
@@ -68,7 +68,9 @@ const PriceRequests = ({ socket }) => {
     });
 
     return () => {
-      socket.off('priceApprovalUpdate');
+      if (socket && typeof socket.off === 'function') {
+        socket.off('priceApprovalUpdate');
+      }
     };
   }, [socket]);
 
